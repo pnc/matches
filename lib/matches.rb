@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + "/match_method"
 
+# Defines all the necessary components to allow defining dynamic methods.
 module MatchDef
   def matches(regexp, &block)
     @@match_methods ||= []
@@ -30,4 +31,5 @@ module MatchDef
   end
 end
 
+# Squirt these into Class so they're available in new classes.
 Class.class_eval { include MatchDef }

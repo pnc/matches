@@ -10,7 +10,7 @@ begin
                          expressions rather than names, and automatically
                          configires method_missing to handle them.}
     gem.email = "pncalvin@gmail.com"
-    gem.homepage = "http://github.com/pnc/matches"
+    gem.homepage = "http://wiki.github.com/pnc/matches"
     gem.authors = ["Phil Calvin"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "cucumber", ">= 0"
@@ -40,7 +40,7 @@ Rake::RDocTask.new do |rdoc|
 
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "matches #{version}"
-  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('README.rdoc')
   rdoc.rdoc_files.include('lib/*.rb')
 end
 

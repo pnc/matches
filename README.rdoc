@@ -2,15 +2,48 @@
 
 Matches is an easy DSL for defining regular-expression-based methods in Ruby.
 
+Start playing with matches:
+
+    # If needed
+    sudo gem install gemcutter
+    gem tumble
+    
+    sudo gem install matches
+
+Then, in a Ruby file somewhere:
+
+    require 'rubygems'
+    require 'matches'
+    
+    class Hippo
+      def initialize
+        @verbs = []
+      end
+      
+      matches /^(\w+)\!$/ do |verb|
+        @verbs << verb
+      end
+      
+      matches /^(\w+)ed\?$/ do |verb|
+        @verbs.include?(verb)
+      end
+    end
+
+    herman = Hippo.new
+    herman.fatten!
+    herman.touch!
+    
+    herman.touched?
+    ==> true
+
+Read the guide at http://wiki.github.com/pnc/matches to learn more.
+
 == Note on Patches/Pull Requests
  
 * Fork the project.
+* Write some specs and maybe a feature.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but
-   bump version in a commit by itself I can ignore when I pull)
+* Commit!
 * Send me a pull request. Bonus points for topic branches.
 
 == Copyright

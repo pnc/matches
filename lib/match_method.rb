@@ -1,22 +1,30 @@
+# A MatchMethod a method that has a regular expression rather than a name.
+# It simply stores a proc and the regular expression. To use:
+# 
+#     mm = new MatchMethod(:matcher => /foo(w+)/, :proc => Proc.new {puts inspect})
+#     fancy_object = Object.new
+#     mm.match(fancy_object, :foobar)
+#     => <Object:0x1018746f8> 
+#
 class MatchMethod
   attr_accessor :matcher, :proc
   
   # Allows properties to be specified in the constructor.
   # E.g.,
-  #   MetaMethod.new(:matcher => /foo/)
+  #   MatchMethod.new(:matcher => /foo/)
   def initialize(args)
     args.each do |key, value|
       send("#{key}=", value)
     end
   end
   
-  # Returns whether this MetaMethod is capable of matching the given
+  # Returns whether this MatchMethod is capable of matching the given
   # message.
   def matches?(message)
     !!(message.to_s =~ matcher)
   end
   
-  # Calls the method's proc if the message matches.
+  # Calls the method's +proc+ on the given +instance+.
   def match(instance, message, *args)
     groups = message.to_s.match(matcher)[1..-1]
     
