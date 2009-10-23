@@ -15,3 +15,30 @@ Scenario: Define a meta-method
   """
   When I execute the code
   Then I should see "I've been touched!" in the output
+
+Scenario: Another meta-method
+  Given I reset the class Hippo
+  Given I have the following Ruby code:
+  """
+    class Hippo
+      def initialize
+        @verbs = []
+      end
+
+      meta_def /(\w+)\!/ do |verb|
+        @verbs << verb
+      end
+
+      meta_def /(\w+)ed\?/ do |verb|
+        @verbs.include?(verb)
+      end
+    end
+
+    herman = Hippo.new
+    herman.fatten!
+    herman.touch!
+
+    puts herman.touched?
+  """
+  When I execute the code
+  Then I should see "true" in the output

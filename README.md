@@ -6,7 +6,9 @@ meta_def
 For instance, you could define a method like this:
 
     class Hippo
-      @verbs = []
+      def initialize
+        @verbs = []
+      end
       
       meta_def /(\w+)\!/ do |verb|
         @verbs << verb
