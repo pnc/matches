@@ -3,15 +3,9 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe MatchDef do
   before(:each) do
     Hippo.reset_match_methods
-    
+        
+    Object.send(:remove_const, :Hippo)
     class Hippo
-      def method_missing(message, *args)
-        super
-      end
-      
-      if method_defined?(:match_method_missing)
-        undef match_method_missing
-      end
     end
   end
   
@@ -47,6 +41,18 @@ describe MatchDef do
       test = Hippo.new
       test.should_receive(:worked).once.with('fight')
       test.bar_fight()
+    end
+    
+    it "should support arguments, too" do
+      Hippo.class_eval do
+        matches /bar_(\w+)/ do |activity, style|
+          worked(activity, style)
+        end
+      end
+    
+      test = Hippo.new
+      test.should_receive(:worked).once.with('fight', 'crazy')
+      test.bar_fight('crazy')
     end
     
     it "should fall through normally if no match" do
@@ -87,7 +93,7 @@ describe MatchDef do
       end
     
       test = Rhino.new
-      lambda { test.second() }.should raise_error
+      lambda { test.second() }.should raise_error(NoMethodError)
     end
   
   end
@@ -109,22 +115,52 @@ describe MatchDef do
     
     it "should differentiate between class and instance methods" do
       class Hippo
-        matches /foo/ do
-          worked
+        matches /something/ do
+          throw "Called on instance"
         end
         
         class << self
-          matches /foo/ do
-            failed
+          matches /something/ do
+            throw "Called on class"
           end
         end
       end
       
       herman = Hippo.new
-      Hippo.should_receive(:failed).never
-      herman.should_receive(:worked).once
       
+      lambda { herman.something }.should raise_error(NameError)
+      lambda { Hippo.something }.should raise_error(NameError)
+    end
+  end
+  
+  describe "caching" do
+    it "should cache methods when they are called" do
+      class Hippo
+        matches /foo/ do
+          worked
+        end
+      end
+    
+      herman = Hippo.new
+      herman.should_receive(:worked).once
+    
       herman.foo
+      herman.methods.should include('foo')
+    end
+    
+    it "should support complex, multi-argument cached methods" do
+      class Hippo
+        matches /foo_(\w+)/ do |a, b|
+          worked(a, b)
+        end
+      end
+    
+      herman = Hippo.new
+      herman.should_receive(:worked).twice.with('bar', 'baz')
+    
+      herman.foo_bar('baz')
+      herman.methods.should include('foo_bar')
+      herman.foo_bar('baz')
     end
   end
 end

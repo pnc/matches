@@ -25,6 +25,7 @@ Scenario: Another meta-method
       end
 
       matches /^(\w+)\!$/ do |verb|
+        puts "Doing a #{verb}"
         @verbs << verb
       end
 
