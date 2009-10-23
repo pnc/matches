@@ -1,4 +1,4 @@
-class MetaMethod
+class MatchMethod
   attr_accessor :matcher, :proc
   
   # Allows properties to be specified in the constructor.

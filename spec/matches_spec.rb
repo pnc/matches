@@ -1,21 +1,21 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe MetaDef do
+describe MatchDef do
   before(:each) do
     Hippo.reset_meta_methods
   end
   
-  it "should provide a meta_def method on classes" do
+  it "should provide a matches method on classes" do
     lambda {
       Hippo.class_eval do
-        meta_def /foo/
+        matches /foo/
       end
     }.should_not raise_error
   end
   
   it "should call the method if it matches" do
     Hippo.class_eval do
-      meta_def /bar/ do
+      matches /bar/ do
         worked
       end
     end
@@ -27,7 +27,7 @@ describe MetaDef do
   
   it "should pass in the match groups" do
     Hippo.class_eval do
-      meta_def /bar_(\w+)/ do |activity|
+      matches /bar_(\w+)/ do |activity|
         worked(activity)
       end
     end
@@ -43,7 +43,7 @@ describe MetaDef do
         affirm(message)
       end
       
-      meta_def /second/ do
+      matches /second/ do
         affirm(:second)
       end
     end
@@ -54,7 +54,21 @@ describe MetaDef do
     test.first()
     test.second()
   end
+  
+  it "should not pollute other classes" do
+    Hippo.class_eval do
+      matches /second/ do
+        throw "Should never be reached"
+      end
+    end
+    
+    test = Rhino.new
+    lambda { test.second() }.should raise_error
+  end
 end
 
 class Hippo
+end
+
+class Rhino
 end

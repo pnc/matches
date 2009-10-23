@@ -1,20 +1,22 @@
-meta_def
-========
+Matches – easygoing methods
+===========================
 
-`meta_def` is a helper for defining intelligent meta-methods in Ruby.
+Matches is an easy DSL for defining regular-expression-based methods in Ruby.
 
-For instance, you could define a method like this:
+Start playing with matches:
 
+    require 'matches'
+    
     class Hippo
       def initialize
         @verbs = []
       end
       
-      meta_def /(\w+)\!/ do |verb|
+      matches /(\w+)\!/ do |verb|
         @verbs << verb
       end
       
-      meta_def /(\w+)ed\?/ do |verb|
+      matches /(\w+)ed\?/ do |verb|
         @verbs.include?(verb)
       end
     end

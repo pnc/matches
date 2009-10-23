@@ -1,12 +1,12 @@
 As a fancy-pants programmer
-I want to define meta-methods using regular expressions
+I want to define match methods using regular expressions
 So that I don't have to screw around with method_missing
 
-Scenario: Define a meta-method
+Scenario: Define a matcher method
   Given I have the following Ruby code:
   """
     class Hippo 
-      meta_def /(\w+)\!/ do |verb|
+      matches /(\w+)\!/ do |verb|
         puts "I've been #{verb}ed!"
       end
     end
@@ -25,11 +25,11 @@ Scenario: Another meta-method
         @verbs = []
       end
 
-      meta_def /(\w+)\!/ do |verb|
+      matches /(\w+)\!/ do |verb|
         @verbs << verb
       end
 
-      meta_def /(\w+)ed\?/ do |verb|
+      matches /(\w+)ed\?/ do |verb|
         @verbs.include?(verb)
       end
     end
