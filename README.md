@@ -5,6 +5,15 @@ Matches is an easy DSL for defining regular-expression-based methods in Ruby.
 
 Start playing with matches:
 
+    # If needed
+    sudo gem install gemcutter
+    gem tumble
+    
+    sudo gem install matches
+
+Then, in a Ruby file somewhere:
+
+    require 'rubygems'
     require 'matches'
     
     class Hippo
