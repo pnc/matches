@@ -19,7 +19,7 @@ Scenario: Define a matcher method
 Scenario: Another meta-method
   Given I have the following Ruby code:
   """
-    class Rhino
+    class Hippo
       def initialize
         @verbs = []
       end
@@ -34,11 +34,11 @@ Scenario: Another meta-method
       end
     end
 
-    roger = Rhino.new
-    roger.fatten!
-    roger.touch!
+    herman = Hippo.new
+    herman.fatten!
+    herman.touch!
 
-    puts roger.touched?
+    puts herman.touched?
   """
   When I execute the code
   Then I should see "true" in the output

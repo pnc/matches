@@ -38,19 +38,29 @@ class MatchMethod
 end
 
 # SWEET HACK ZOMG. Mind has been blown.
-# http://www.ruby-forum.com/topic/54096
-# Mauricio Fernandez is a Ruby beast.
 # This provides instance-exec-like functionality in Ruby 1.8.
+# Originally saw this here:
+# http://www.ruby-forum.com/topic/54096
+# It appears to have been revised here, so this is a new version:
+# http://eigenclass.org/hiki/bounded+space+instance_exec
 
 if RUBY_VERSION.split('.')[1].to_i < 9
   class Object
+    module InstanceExecHelper; end
+    include InstanceExecHelper
     def instance_exec(*args, &block)
-      mname = "__instance_exec_#{Thread.current.object_id.abs}"
-      class << self; self end.class_eval{ define_method(mname, &block) }
+      begin
+        old_critical, Thread.critical = Thread.critical, true
+        n = 0
+        n += 1 while respond_to?(mname="__instance_exec#{n}")
+        InstanceExecHelper.module_eval{ define_method(mname, &block) }
+      ensure
+        Thread.critical = old_critical
+      end
       begin
         ret = send(mname, *args)
       ensure
-        class << self; self end.class_eval{ undef_method(mname) } rescue nil
+        InstanceExecHelper.module_eval{ remove_method(mname) } rescue nil
       end
       ret
     end
