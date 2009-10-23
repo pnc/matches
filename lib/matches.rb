@@ -5,21 +5,29 @@ module MatchDef
   # Defines a new class method that allows you to define dynamic instance methods.
   # Takes a regular expression and a block, which are stored and called later.
   def matches(regexp, &block)
-    
     # This evil voodoo scares the crud out of me.
     # It sneaks into the instance upon which we are called
     # and sets a class variable, so we can keep track of what
     # match methods have been defined.
-    unless self.class_variables.include?(:@@match_methods)
+    unless self.send(:class_variable_defined?, :@@match_methods)
       self.send(:class_variable_set, :@@match_methods, [])
+    end
+    
+    append_to_methods = Proc.new do |method|
+      current = self.send(:class_variable_get, :@@match_methods)
+      self.send(:class_variable_set, :@@match_methods, current + [method])
+    end
+    
+    @@available_methods = Proc.new do
+      self.send(:class_variable_get, :@@match_methods)
     end
     
     # The above statement tweaks the scope, so when we refer to
     # @@match_methods here, what we're really doing is referring to
     # the above @@match_methods.
     self.class_eval do
-      @@match_methods << MatchMethod.new( :matcher => regexp,
-                                          :proc => block )
+      append_to_methods.call(MatchMethod.new( :matcher => regexp,
+                                              :proc => block ))
     end
     
     self.class_eval {
@@ -32,11 +40,10 @@ module MatchDef
         # Defines a +method_missing+ that is aware of the
         # dynamically-defined methods and will call them if appropriate.
         def match_method_missing(message, *args, &block)
-          puts "Trying to find a method for #{message} in #{@@match_methods.inspect}"
           result = nil
           
           # Attempt to evaluate this using a MatchMethod
-          matched = @@match_methods.find do |mm|
+          matched = @@available_methods.call.find do |mm|
             if mm.matches?(message)
               
               # Cache the method onto the class
@@ -59,11 +66,24 @@ module MatchDef
     }
   end
   
+  def reset_match_methods
+    # @@match_methods = []
+  end
+  
   # Allows you to delete all defined dynamic methods on a class.
   # This permits testing.
-  def reset_match_methods
-    @@match_methods = []
-  end
+  # def reset_match_methods
+  #  puts "Resetting match methods."
+  #  self.send(:class_variable_set, :@@match_methods, [])
+  #  
+  #  if self.class_variables.include?(:@@cached_match_methods)
+  #    @@cached_match_methods.each do |method|
+  #      self.class_eval("undef #{method}")
+  #    end
+  #  end
+  #  
+  #  self.send(:class_variable_set, :@@cached_match_methods, [])
+  #end
 end
 
 # Squirt these into Class so they're available in new classes.

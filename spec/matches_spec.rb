@@ -91,9 +91,12 @@ describe MatchDef do
           throw "Should never be reached"
         end
       end
-    
+      
+      herman = Hippo.new
+      lambda { herman.second }.should raise_error(NameError)
+      
       test = Rhino.new
-      lambda { test.second() }.should raise_error(NoMethodError)
+      lambda { test.second }.should raise_error(NoMethodError)
     end
   
   end
