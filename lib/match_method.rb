@@ -34,15 +34,17 @@ end
 # Mauricio Fernandez is a Ruby beast.
 # This provides instance-exec-like functionality in Ruby 1.8.
 
-class Object
-  def instance_exec(*args, &block)
-    mname = "__instance_exec_#{Thread.current.object_id.abs}"
-    class << self; self end.class_eval{ define_method(mname, &block) }
-    begin
-      ret = send(mname, *args)
-    ensure
-      class << self; self end.class_eval{ undef_method(mname) } rescue nil
+if RUBY_VERSION.split('.')[1].to_i < 9
+  class Object
+    def instance_exec(*args, &block)
+      mname = "__instance_exec_#{Thread.current.object_id.abs}"
+      class << self; self end.class_eval{ define_method(mname, &block) }
+      begin
+        ret = send(mname, *args)
+      ensure
+        class << self; self end.class_eval{ undef_method(mname) } rescue nil
+      end
+      ret
     end
-    ret
   end
 end

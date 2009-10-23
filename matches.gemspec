@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{matches}
-  s.version = "1.0.0"
+  s.version = "1.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Phil Calvin"]
@@ -20,8 +20,11 @@ Gem::Specification.new do |s|
      "README.rdoc"
   ]
   s.files = [
-    "LICENSE",
+    ".document",
+     ".gitignore",
+     "LICENSE",
      "README.md",
+     "README.rdoc",
      "Rakefile",
      "VERSION",
      "features/define_matches.feature",
@@ -29,8 +32,10 @@ Gem::Specification.new do |s|
      "features/support/env.rb",
      "lib/match_method.rb",
      "lib/matches.rb",
+     "matches.gemspec",
      "spec/match_method_spec.rb",
      "spec/matches_spec.rb",
+     "spec/spec.opts",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/pnc/matches}

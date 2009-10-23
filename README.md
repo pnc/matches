@@ -12,11 +12,11 @@ Start playing with matches:
         @verbs = []
       end
       
-      matches /(\w+)\!/ do |verb|
+      matches /^(\w+)\!$/ do |verb|
         @verbs << verb
       end
       
-      matches /(\w+)ed\?/ do |verb|
+      matches /^(\w+)ed\?$/ do |verb|
         @verbs.include?(verb)
       end
     end
@@ -28,3 +28,4 @@ Start playing with matches:
     herman.touched?
     ==> true
 
+[Read the guide](http://wiki.github.com/pnc/matches) to learn more.

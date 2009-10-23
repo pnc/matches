@@ -12,10 +12,11 @@ begin
     gem.email = "pncalvin@gmail.com"
     gem.homepage = "http://github.com/pnc/matches"
     gem.authors = ["Phil Calvin"]
-    gem.add_development_dependency "rspec", ">= 0"
+    gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "cucumber", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
+  Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
@@ -33,10 +34,6 @@ rescue LoadError
   end
 end
 
-task :test => :check_dependencies
-
-task :default => :spec
-
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
@@ -44,33 +41,23 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "matches #{version}"
   rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.rdoc_files.include('lib/*.rb')
 end
-
-gem 'test-unit', '1.2.3' if RUBY_VERSION.to_f >= 1.9
 
 require 'spec/rake/spectask'
+Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.spec_opts = ['--options', "\"spec/spec.opts\""]
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/*_spec.rb']
+end
 
-Rake.application.instance_variable_get('@tasks').delete('default')
+Spec::Rake::SpecTask.new(:rcov) do |spec|
+
+  spec.libs << 'lib' << 'spec'
+  spec.pattern = 'spec/*_spec.rb'
+  spec.rcov = true
+end
+
+task :spec => :check_dependencies
 
 task :default => :spec
-task :stats => "spec:statsetup"
-
-desc "Run all specs in spec directory"
-Spec::Rake::SpecTask.new() do |t|
-  t.spec_files = FileList['spec/*_spec.rb']
-end
-
-namespace :spec do
-  desc "Run all specs in spec directory with RCov (excluding plugin specs)"
-  Spec::Rake::SpecTask.new(:rcov) do |t|
-    t.spec_files = FileList['spec/*_spec.rb']
-    t.rcov = true
-  end
-
-  desc "Print Specdoc for all specs (excluding plugin specs)"
-  Spec::Rake::SpecTask.new(:doc) do |t|
-    t.spec_opts = ["--format", "specdoc", "--dry-run"]
-    t.spec_files = FileList['spec/**/*/*_spec.rb']
-  end
-end
