@@ -53,7 +53,7 @@ Scenario: Defining class methods
       end
       
       class << self
-        self_matches /^new_(\w+)$/ do |dis|
+        matches /^new_(\w+)$/ do |dis|
           new(dis)
         end
       end

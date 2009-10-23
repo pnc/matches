@@ -52,10 +52,13 @@ Spec::Rake::SpecTask.new(:spec) do |spec|
 end
 
 Spec::Rake::SpecTask.new(:rcov) do |spec|
-
+  spec.spec_opts = ['--options', "\"spec/spec.opts\""]
+  spec.spec_files = FileList['spec/*_spec.rb']
   spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/*_spec.rb'
   spec.rcov = true
+  spec.rcov_opts = lambda do
+    IO.readlines("spec/rcov.opts").map {|l| l.chomp.split " "}.flatten
+  end
 end
 
 task :spec => :check_dependencies
