@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.date = %q{2009-10-23}
   s.description = %q{Matches allows you to define methods that have regular 
                          expressions rather than names, and automatically
-                         configires method_missing to handle them.}
+                         configures method_missing to handle them.}
   s.email = %q{pncalvin@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
