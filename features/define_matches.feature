@@ -6,7 +6,7 @@ Scenario: Define a matcher method
   Given I have the following Ruby code:
   """
     class Hippo 
-      matches /(\w+)\!/ do |verb|
+      matches /^(\w+)\!$/ do |verb|
         puts "I've been #{verb}ed!"
       end
     end
@@ -17,7 +17,6 @@ Scenario: Define a matcher method
   Then I should see "I've been touched!" in the output
 
 Scenario: Another meta-method
-  Given I reset the class Hippo
   Given I have the following Ruby code:
   """
     class Hippo
@@ -25,11 +24,11 @@ Scenario: Another meta-method
         @verbs = []
       end
 
-      matches /(\w+)\!/ do |verb|
+      matches /^(\w+)\!$/ do |verb|
         @verbs << verb
       end
 
-      matches /(\w+)ed\?/ do |verb|
+      matches /^(\w+)ed\?$/ do |verb|
         @verbs.include?(verb)
       end
     end
@@ -42,3 +41,28 @@ Scenario: Another meta-method
   """
   When I execute the code
   Then I should see "true" in the output
+  
+Scenario: Defining class methods
+  Given I have the following Ruby code:
+  """
+    class Hippo
+      attr_accessor :disposition
+      
+      def initialize(dis)
+        self.disposition = dis
+      end
+      
+      class << self
+        self_matches /^new_(\w+)$/ do |dis|
+          new(dis)
+        end
+      end
+    end
+
+    herman = Hippo.new_angry
+
+    puts herman.disposition
+  """
+  When I execute the code
+  Then I should see "angry" in the output
+  

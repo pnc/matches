@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/match_method"
 
 # Defines all the necessary components to allow defining dynamic methods.
 module MatchDef
-  # Defines a new class method that allows you to define dynamic methods.
+  # Defines a new class method that allows you to define dynamicinstance methods.
   # Takes a regular expression and a block, which are stored and called later.
   def matches(regexp, &block)
     @@match_methods ||= []
@@ -10,18 +10,21 @@ module MatchDef
     @@match_methods << MatchMethod.new( :matcher => regexp,
                                         :proc => block )
     self.class_eval {
-      unless respond_to?(:match_method_missing)
+      unless method_defined? :method_missing
+        def method_missing(meth, *args, &block); super; end
+      end
+      
+      unless method_defined?(:match_method_missing)
         # Defines a +method_missing+ that is aware of the
         # dynamically-defined methods and will call them if appropriate.
-        def match_method_missing(message, *args)
+        def match_method_missing(message, *args, &block)
           # Attempt to evaluate this using a MetaMethod
           result = @@match_methods.find do |mm|
             if mm.matches?(message)
               return mm.match(self, message, args)
             end
           end
-          return result if result
-          return old_method_missing(message, args)
+          return result || old_method_missing(message, args, &block)
         end
       
         alias_method :old_method_missing, :method_missing
@@ -32,7 +35,7 @@ module MatchDef
   
   # Allows you to delete all defined dynamic methods on a class.
   # This permits testing.
-  def reset_meta_methods
+  def reset_match_methods
     @@match_methods = []
   end
 end

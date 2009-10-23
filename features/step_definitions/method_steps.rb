@@ -1,7 +1,3 @@
-Given /^I reset the class (.+)$/ do |klass|
-  eval("#{klass}.reset_meta_methods")
-end
-
 Given /^I have the following Ruby code:$/ do |code|
   @code = code
 end
@@ -29,5 +25,9 @@ class OutputStorage
   
   def self.output
     @@output
+  end
+  
+  def self.clear
+    @@output = ""
   end
 end
