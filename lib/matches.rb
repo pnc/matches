@@ -11,7 +11,6 @@ module MatchDef
     # match methods have been defined.
     unless self.send(:class_variable_defined?, :@@match_methods)
       self.send(:class_variable_set, :@@match_methods, [])
-      self.send(:class_variable_set, :@@cached_match_methods, [])
     end
     
     # More voodoo. These work the same way as above, except they can
@@ -24,11 +23,6 @@ module MatchDef
     
     @@available_methods = Proc.new do
       self.send(:class_variable_get, :@@match_methods)
-    end
-    
-    @@append_to_cached_methods = Proc.new do |method|
-      current = self.send(:class_variable_get, :@@cached_match_methods)
-      self.send(:class_variable_set, :@@cached_match_methods, current + [method])
     end
     
     # Actually append this method as a dynamic method.
@@ -60,10 +54,6 @@ module MatchDef
                 return mm.match(self, message, *largs) 
               })
               
-              # Store the name of the cached method in order to facilitate
-              # introspection.
-              @@append_to_cached_methods.call(message)
-              
               # Call the actual method
               result = self.send(message, *args)
               
@@ -77,23 +67,6 @@ module MatchDef
         alias_method :method_missing, :match_method_missing
       end
     }
-  end
-  
-  # Allows you to delete all defined dynamic methods on a class.
-  # This permits testing.
-  def reset_match_methods
-    self.send(:class_variable_set, :@@match_methods, [])
-    
-    if self.send(:class_variable_defined?, :@@cached_match_methods)
-      puts "Cleaning out #{self.inspect}<br/>"
-      self.send(:class_variable_get, :@@cached_match_methods).each do |method|
-        puts "I think there's a #{method} on it<br/>"
-        throw "Shit" if self.send(:methods).include?(method)
-        self.send(:undef_method, method) if self.send(:method_defined?, method)
-      end
-    end
-    
-    self.send(:class_variable_set, :@@cached_match_methods, [])
   end
 end
 
