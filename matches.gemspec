@@ -5,14 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = %q{matches}
-  s.version = "1.0.4"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Phil Calvin"]
   s.date = %q{2009-10-23}
   s.description = %q{Matches allows you to define methods that have regular 
                          expressions rather than names, and automatically
-                         configures method_missing to handle them.}
+                         configires method_missing to handle them.}
   s.email = %q{pncalvin@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",

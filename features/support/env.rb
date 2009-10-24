@@ -7,6 +7,7 @@ Before do
   # in the scenarios. Reset their match methods if necessary.
   Module.constants.each do |constant|
     klass = Kernel.const_get(constant)
+    puts "Doing a clean #{constant}<br/>"
     if klass.kind_of?(Class)
       klass.reset_match_methods if klass.respond_to?(:reset_match_methods)
     end

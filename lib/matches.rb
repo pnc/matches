@@ -14,6 +14,9 @@ module MatchDef
       self.send(:class_variable_set, :@@cached_match_methods, [])
     end
     
+    # More voodoo. These work the same way as above, except they can
+    # be used while within a class_eval context below.
+    
     append_to_methods = Proc.new do |method|
       current = self.send(:class_variable_get, :@@match_methods)
       self.send(:class_variable_set, :@@match_methods, current + [method])
@@ -28,9 +31,7 @@ module MatchDef
       self.send(:class_variable_set, :@@cached_match_methods, current + [method])
     end
     
-    # The above statement tweaks the scope, so when we refer to
-    # @@match_methods here, what we're really doing is referring to
-    # the above @@match_methods.
+    # Actually append this method as a dynamic method.
     self.class_eval do
       append_to_methods.call(MatchMethod.new( :matcher => regexp,
                                               :proc => block ))
@@ -38,6 +39,8 @@ module MatchDef
     
     self.class_eval {
       
+      # Create a method_missing that simply calls super. This prevents
+      # us from running recursively.
       unless method_defined? :method_missing
         def method_missing(meth, *args, &block); super; end
       end
@@ -76,18 +79,17 @@ module MatchDef
     }
   end
   
-  def reset_match_methods
-    # @@match_methods = []
-  end
-  
   # Allows you to delete all defined dynamic methods on a class.
   # This permits testing.
   def reset_match_methods
     self.send(:class_variable_set, :@@match_methods, [])
     
     if self.send(:class_variable_defined?, :@@cached_match_methods)
+      puts "Cleaning out #{self.inspect}<br/>"
       self.send(:class_variable_get, :@@cached_match_methods).each do |method|
-        self.send(:undef_method, method)
+        puts "I think there's a #{method} on it<br/>"
+        throw "Shit" if self.send(:methods).include?(method)
+        self.send(:undef_method, method) if self.send(:method_defined?, method)
       end
     end
     
