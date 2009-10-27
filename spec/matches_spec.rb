@@ -2,8 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe MatchDef do
   before(:each) do
-    Hippo.reset_match_methods
-        
     Object.send(:remove_const, :Hippo)
     class Hippo
     end
